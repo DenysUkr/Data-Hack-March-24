@@ -196,12 +196,12 @@ ggplot(data=senateBillSchools, aes(x=X..Economically.Disadvantaged) ) + geom_his
 
 # leniar graph of population vs score
 
-
+ggplot(data=allRatedSchools, aes(x=Number.of.Students, y=Overall.Score) ) + geom_point(col="navy", fill="red4") + labs( title = "School Population vs Overall Score", x="School Population") + xlim(c(0,2000))
 
 
 # leniar graph of economicly disadvanataged vs score 
 
-ggplot(data=allRatedSchools, aes(x=X..Economically.Disadvantaged, t=Overall.Score) ) + geom_dotplot(col="navy", fill="red4") + labs( title = "Histogram of the School Proportion of Economicly Disadvantaged Students", x="Proportion of Economicly Disdvantage Students")
+ggplot(data=allRatedSchools, aes(x=X..Economically.Disadvantaged, y=Overall.Score) ) + geom_point(col="navy", fill="red4") + labs( title = "Economicly Disadvantaged Proporion vs Overall Score", x="Proportion of Economicly Disdvantage Students")
 
 
 ```

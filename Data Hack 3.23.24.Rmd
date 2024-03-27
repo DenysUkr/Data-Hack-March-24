@@ -164,9 +164,14 @@ setateBillSchoolsTable
 
 
 
+```
+
+```{r}
+###### Describtive statistics of the data #####
+
 # create student population histograms between the schools subsets 
 
-
+ggplot(data=underperformingProportion, aes(x=proportion) ) + geom_histogram(col="navy", fill="red4", bins = 15) + labs( title = "Histogram of the proportion of underperforming schools in all Texas Counties", x="Underpreforming Proportion per County")
 
 # create economicly disadvantaged histograms between the schools subsets 
 
@@ -181,7 +186,6 @@ setateBillSchoolsTable
 
 # leniar graph of economicly disadvanataged vs score 
 
-
 ```
 
 ```{r}
@@ -190,7 +194,7 @@ setateBillSchoolsTable
 # find the schools that are bellow the q3 Overall Score
 
 underpreformingSchools = allRatedSchools %>% 
-  filter(Overall.Score < 83)
+  filter(Overall.Score < 83) 
 
 # create a tibble with the total ammount of counties grouped by each school type 
 countyCounts = underpreformingSchools %>%
@@ -219,10 +223,16 @@ combinedCount
   summarise(totalCount = n())
 
 
-underperforming_proportion = merge(underpreformingSchools, totalOfSchools, by = "County") %>%
-  mutate(proportion = underpreformingCount / totalCount)
+underperformingProportion = merge(countyCounts, totalOfSchools, by = "County") %>%
+  mutate(proportion = underpreformingCount / totalCount) %>% 
+  arrange(desc(proportion))
+
+underperformingProportion
 
 
+# create a histogram of the distibution of the proportion of underpreforming schools 
+
+ggplot(data =underperformingProportion, aes(x=proportion) ) + geom_histogram(col="navy", fill="red4", bins = 15) + labs( title = "Histogram of the proportion of underperforming schools in all Texas Counties", x="Underpreforming Proportion per County")
 ```
 
 ## Results

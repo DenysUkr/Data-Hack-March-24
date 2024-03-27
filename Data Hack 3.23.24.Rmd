@@ -171,20 +171,38 @@ setateBillSchoolsTable
 
 # create student population histograms between the schools subsets 
 
-ggplot(data=underperformingProportion, aes(x=proportion) ) + geom_histogram(col="navy", fill="red4", bins = 15) + labs( title = "Histogram of the proportion of underperforming schools in all Texas Counties", x="Underpreforming Proportion per County")
+ggplot(data=allRatedSchools, aes(x=Number.of.Students) ) + geom_histogram(col="navy", fill="red4") + labs( title = "Histogram of the School Populations", x="School Population") + xlim(c(0,2000))
 
 # create economicly disadvantaged histograms between the schools subsets 
 
+ggplot(data=allRatedSchools, aes(x=X..Economically.Disadvantaged) ) + geom_histogram(col="navy", fill="red4") + labs( title = "Histogram of the School Proportion of Economicly Disadvantaged Students", x="Proportion of Economicly Disdvantage Students")
 
 
-# create overall score histograms between the schools subsets (only rated and senete bill schools)
+###### create overall score histograms between the schools subsets (only rated and senete bill schools) ######
 
+
+# create student population histograms between the schools subsets 
+
+ggplot(data=senateBillSchools, aes(x=Number.of.Students) ) + geom_histogram(col="navy", fill="red4") + labs( title = "Histogram of the School Populations", x="School Population") + xlim(c(0,2000))
+
+# create economicly disadvantaged histograms between the schools subsets 
+
+ggplot(data=senateBillSchools, aes(x=X..Economically.Disadvantaged) ) + geom_histogram(col="navy", fill="red4") + labs( title = "Histogram of the School Proportion of Economicly Disadvantaged Students", x="Proportion of Economicly Disdvantage Students")
+
+```
+
+```{r}
+##### Regression Models #####
 
 # leniar graph of population vs score
 
 
 
+
 # leniar graph of economicly disadvanataged vs score 
+
+ggplot(data=allRatedSchools, aes(x=X..Economically.Disadvantaged, t=Overall.Score) ) + geom_dotplot(col="navy", fill="red4") + labs( title = "Histogram of the School Proportion of Economicly Disadvantaged Students", x="Proportion of Economicly Disdvantage Students")
+
 
 ```
 

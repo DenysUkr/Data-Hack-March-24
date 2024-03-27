@@ -1,0 +1,230 @@
+---
+title: "March Data Hack"
+author: "Denys Osmak"
+date: "2024-03-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rvest)
+library(sas7bdat)
+library(tibble)
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(stringr)
+```
+
+# TITLE
+
+## Introduction
+
+We are here focusing on finding what spacific areas in education are lacking the most. We want to focus what types of schools (Elementry, Middle, High, Elem\\Seccondary schools) are relativly behind the avarage preformance. Additionally, what counties are the worst prefformers and the best.
+
+## Methods
+
+### Comparesions of School Types
+
+1.  Find the avarage for all texas schools and the 5 sum summery
+2.  Create box plot for all school types (exluding Districts) that will be as a baseline.
+3.  Create box plots for all school types seperatly and the avarage plot
+4.  Find the worst preforming (bottom quartile and bottom outliers) and do a table on the Counties they are from
+
+### Compersions of Counties
+
+1.  Find the avarage for all texas schools and the 5 sum summery
+2.  Create box plot for all school types (exluding Districts) that will be as a baseline.
+3.  Find the worst preforming (bottom quartile and bottom outliers) and do a table on the Counties they are from
+
+## Analysis
+
+```{r}
+#####  combining the datasets into one 
+
+# importing all of the datasets 
+
+schoolData1 = read.csv("Copy of School_Year_2021-2022_Statewide_Accountability_Ratings_as_of_February_6__2023_20240305.csv")
+
+juvinileData = read.csv("Copy of TJJD_-_County_Level_Referral_Data__FY_2013-2021_20240305.csv")
+
+investigationData = read.csv("Copy of APS_5.2_Outcomes__Recidivism_by_County_FY2014-2023_20240305.csv")
+
+# filter by year & selecting what we gonna use 
+
+juvinileData = juvinileData %>% 
+  filter(Calendar.Year == 2021) %>% 
+  select(c("County", "Juvenile.Population", "Youth.Referred", "Referral.Rate.1.000" ))
+
+investigationData = investigationData %>% 
+  filter(Fiscal.Year == 2021)  %>% 
+  select( c("County", "Recidivism"))
+
+schoolData1 = schoolData1 %>% 
+  filter(School.Type == "District") %>% 
+  select( c( "County", "School.Type", "Number.of.Students", "X..Economically.Disadvantaged", "Overall.Rating", "Overall.Score" ))
+
+# combining the datasets 
+
+d1 = merge(schoolData1, juvinileData)
+
+investigationData$County = toupper(investigationData$County)
+
+compleateDataset = merge(d1,investigationData )
+
+# exportign as CSV
+
+#write.csv(compleateDataset, "C:\\Users\\denys\\Desktop\\Hackathon\\3.23.24 Datahack\\compleateDataset.csv", row.names=FALSE)
+
+```
+
+```{r}
+##### Creating a function to give me a table of a five number summery #####
+
+fiveNumTable = function(dataSet, groupByData, dataColum){
+  dataSet %>% 
+  group_by(groupByData) %>% 
+  summarise(
+    min = min(dataColum, na.rm = TRUE),
+    q1 = quantile(dataColum, 0.25, na.rm = TRUE),
+    median = median(dataColum, na.rm = TRUE),
+    q3 = quantile(dataColum, 0.75, na.rm = TRUE),
+    max = max(dataColum, na.rm = TRUE)
+)
+}
+
+
+```
+
+```{r}
+
+# importing the data 
+schoolData = read.csv("Copy of School_Year_2021-2022_Statewide_Accountability_Ratings_as_of_February_6__2023_20240305.csv")
+
+# selecting the colums needed
+
+schoolData = select(schoolData, c("Region","District", "County", "School.Type", "Number.of.Students", "X..Economically.Disadvantaged", "Overall.Rating", "Overall.Score" ))
+
+# making overall score an intiger. IF NA then replace it with 0
+
+schoolData$Overall.Score = ifelse(is.na(schoolData$Overall.Score), 0, as.integer(schoolData$Overall.Score))
+
+
+#Find the avarage for all texas schools and the 5 sum summery 
+
+individialSchoolsData = schoolData %>% 
+  filter(School.Type != "District")
+
+notRatedSchools = individialSchoolsData %>% 
+  filter(Overall.Score == ".")
+
+senateBillSchools = individialSchoolsData %>% 
+  filter(Overall.Rating == "Not Rated: Senate Bill 1365")
+
+
+allRatedSchools = individialSchoolsData %>% 
+  filter(Overall.Rating != "Not Rated")
+
+#Create box plot for all school types (exluding Districts) that will be as a baseline. 
+
+ggplot(allRatedSchools, aes(x = School.Type, y = as.integer(Overall.Score))) + geom_boxplot(col="navy") + labs(title = "All Schools & The School Type Distribution of Overall Score", x="School Type", y="School's Overall Score") + ylim(c(40,100))
+
+ggplot(senateBillSchools, aes(x = School.Type, y = as.integer(Overall.Score))) + geom_boxplot(col="navy") + labs(title = "Senate Bill Protected School Types Distribution of Overall Score", x="School Type", y="School's Overall Score") + ylim(c(40,100))
+
+#allRatedSchools = allRatedSchools %>% 
+  #mutate(., SenateBillProtected = Overall.Rating == "Not Rated: Senate Bill 1365")
+
+#ggplot(allRatedSchools, aes(x = School.Type, y = as.integer(Overall.Score))) + geom_boxplot(col="navy") + labs(title = "School Type Comperison", x="School Type", y="School's Overall Score") + ylim(c(40,100)) + facet_wrap(~SenateBillProtected)
+
+# creating 5 num table for 2 schools datas
+
+allSchoolsTable = allRatedSchools %>% 
+  group_by(School.Type) %>% 
+  summarise(
+    min = min(Overall.Score, na.rm = TRUE),
+    q1 = quantile(Overall.Score, 0.25, na.rm = TRUE),
+    median = median(Overall.Score, na.rm = TRUE),
+    q3 = quantile(Overall.Score, 0.75, na.rm = TRUE),
+    max = max(Overall.Score, na.rm = TRUE)
+)
+
+allSchoolsTable
+
+
+setateBillSchoolsTable = senateBillSchools %>% 
+  group_by(School.Type) %>% 
+  summarise(
+    min = min(Overall.Score, na.rm = TRUE),
+    q1 = quantile(Overall.Score, 0.25, na.rm = TRUE),
+    median = median(Overall.Score, na.rm = TRUE),
+    q3 = quantile(Overall.Score, 0.75, na.rm = TRUE),
+    max = max(Overall.Score, na.rm = TRUE)
+)
+setateBillSchoolsTable
+
+
+
+# create student population histograms between the schools subsets 
+
+
+
+# create economicly disadvantaged histograms between the schools subsets 
+
+
+
+# create overall score histograms between the schools subsets (only rated and senete bill schools)
+
+
+# leniar graph of population vs score
+
+
+
+# leniar graph of economicly disadvanataged vs score 
+
+
+```
+
+```{r}
+##### Find the worst preforming (bottom quartile and bottom outliers) and do a table on the Counties they are from #####
+
+# find the schools that are bellow the q3 Overall Score
+
+underpreformingSchools = allRatedSchools %>% 
+  filter(Overall.Score < 83)
+
+# create a tibble with the total ammount of counties grouped by each school type 
+countyCounts = underpreformingSchools %>%
+  count(County, sort = TRUE)  %>% 
+  rename(underpreformingCount = n )
+
+countyCounts
+
+schoolTypeCount = underpreformingSchools %>%
+  count(School.Type, sort = TRUE)  %>% 
+  rename(underpreformingCount = n )
+
+schoolTypeCount
+
+
+combinedCount = underpreformingSchools %>%
+  count(School.Type, County, sort = TRUE) %>% 
+  rename(underpreformingCount = n )
+
+combinedCount
+
+# what is the proportion of underpreforming schoools in each county proportional to total 
+
+ totalOfSchools = allRatedSchools %>%
+  group_by(County) %>%
+  summarise(totalCount = n())
+
+
+underperforming_proportion = merge(underpreformingSchools, totalOfSchools, by = "County") %>%
+  mutate(proportion = underpreformingCount / totalCount)
+
+
+```
+
+## Results
+
+## Conclusion

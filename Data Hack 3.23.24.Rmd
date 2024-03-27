@@ -79,24 +79,6 @@ compleateDataset = merge(d1,investigationData )
 ```
 
 ```{r}
-##### Creating a function to give me a table of a five number summery #####
-
-fiveNumTable = function(dataSet, groupByData, dataColum){
-  dataSet %>% 
-  group_by(groupByData) %>% 
-  summarise(
-    min = min(dataColum, na.rm = TRUE),
-    q1 = quantile(dataColum, 0.25, na.rm = TRUE),
-    median = median(dataColum, na.rm = TRUE),
-    q3 = quantile(dataColum, 0.75, na.rm = TRUE),
-    max = max(dataColum, na.rm = TRUE)
-)
-}
-
-
-```
-
-```{r}
 
 # importing the data 
 schoolData = read.csv("Copy of School_Year_2021-2022_Statewide_Accountability_Ratings_as_of_February_6__2023_20240305.csv")
@@ -234,7 +216,7 @@ combinedCount = underpreformingSchools %>%
 
 combinedCount
 
-# what is the proportion of underpreforming schoools in each county proportional to total 
+# what is the proportion of underperforming schoools in each county proportional to total 
 
  totalOfSchools = allRatedSchools %>%
   group_by(County) %>%
@@ -250,7 +232,7 @@ underperformingProportion
 
 # create a histogram of the distibution of the proportion of underpreforming schools 
 
-ggplot(data =underperformingProportion, aes(x=proportion) ) + geom_histogram(col="navy", fill="red4", bins = 15) + labs( title = "Histogram of the proportion of underperforming schools in all Texas Counties", x="Underpreforming Proportion per County")
+ggplot(data =underperformingProportion, aes(x=proportion) ) + geom_histogram(col="navy", fill="red4", bins = 15) + labs( title = "Histogram of the proportion of underperforming schools in all Texas Counties", x="Underperforming Proportion per County")
 ```
 
 ## Results

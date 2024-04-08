@@ -1,6 +1,6 @@
 ---
 title: "March Data Hack"
-author: "Denys Osmak"
+author: "Denys Osmak & Medhavi Jambhekar"
 date: "2024-03-23"
 output: html_document
 ---
@@ -165,11 +165,11 @@ ggplot(data=allRatedSchools, aes(x=X..Economically.Disadvantaged) ) + geom_histo
 
 # create student population histograms between the schools subsets 
 
-ggplot(data=senateBillSchools, aes(x=Number.of.Students) ) + geom_histogram(col="navy", fill="red4") + labs( title = "Histogram of the School Populations", x="School Population") + xlim(c(0,2000))
+ggplot(data=senateBillSchools, aes(x=Number.of.Students) ) + geom_histogram(col="navy", fill="red4") + labs( title = "Histogram of the School Populations Under Bill 1365", x="School Population") + xlim(c(0,2000))
 
 # create economicly disadvantaged histograms between the schools subsets 
 
-ggplot(data=senateBillSchools, aes(x=X..Economically.Disadvantaged) ) + geom_histogram(col="navy", fill="red4") + labs( title = "Histogram of the School Proportion of Economicly Disadvantaged Students", x="Proportion of Economicly Disdvantage Students")
+ggplot(data=senateBillSchools, aes(x=X..Economically.Disadvantaged) ) + geom_histogram(col="navy", fill="red4") + labs( title = "Histogram of the School Proportion of Economicly Disadvantaged Students under Bill 1365", x="Proportion of Economicly Disdvantage Students")
 
 ```
 
